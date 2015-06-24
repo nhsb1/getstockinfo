@@ -49,7 +49,15 @@ def volumeHighTest(stock):
 		newvolumehightest = "yes"
 	else:
 		newvolumehightest = "no"
-	return newvolumehightest    
+	return newvolumehightest
+
+def newLowTest(stock):
+	newlowpricetest = ""
+	if getDayLow(stock) == getYearLow(stock):
+		newlowpricetest = "yes"
+	else:
+		newlowpricetest = "no"
+	return newlowpricetest
 
 
 ticker = getinput(mystock)
@@ -64,10 +72,6 @@ myyearhigh = getYearHigh(mystock)
 myyearlow = getYearLow(mystock)
 mynewhightest = newHighTest(mystock)
 myvolumehightest = volumeHighTest(mystock)
+mynewlowtest = newLowTest(mystock)
 
-print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest
-
-
-
-
-	
+print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest
