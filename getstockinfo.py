@@ -102,7 +102,7 @@ for ticker in ticker:
 	mynewhightest = newHighTest(mystock)
 	myvolumehightest = volumeHighTest(mystock)
 	mynewlowtest = newLowTest(mystock)
-	print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest
+	#print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest
 
 print "Hitting 52-week high: " + yearhighlist
 print "Hitting 52-week low: " + yearlowlist
