@@ -1,9 +1,7 @@
 from yahoo_finance import Share 
-from sys import argv
+#from sys import argv
 from argparse import ArgumentParser
 
-
-#initalizes mystock variable as empty
 mystock = ""
 yearhighlist = ""
 yearlowlist = ""
@@ -69,9 +67,29 @@ def newLowTest(stock):
 		newlowpricetest = "no"
 	return newlowpricetest
 
+def volumeSummary():
+	if args.volumeFlag:
+		print "High Volume alert: \n" + volumealert
+
+def yearLowSummary():
+	if args.lowVolumeFlag:
+		print "Hitting 52-week low: \n" + yearlowlist
+
+def yearHighSummary():
+	print "Hitting 52-week high: \n" +  yearhighlist
+
+def detailTicker():
+	if args.detail:
+		print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest
+
+def noInputError():
+	print "Nothing specified, plus run -h for help"
 
 parser = ArgumentParser()
 parser.add_argument("-f", "--file", dest="filename", help="file to open", metavar="FILE")
+parser.add_argument("-v", "--volume", action="store_true", dest="volumeFlag", default=False, help="high volume notification")
+parser.add_argument("-l", "--low", action="store_true", dest="lowVolumeFlag", default=False, help="low volume notification")
+parser.add_argument("-d", "--detail", action="store_true", dest="detail", default=False, help="detailed ticker info")
 args = parser.parse_args()
 
 if args.filename:
@@ -93,8 +111,12 @@ if args.filename:
 		mynewhightest = newHighTest(mystock)
 		myvolumehightest = volumeHighTest(mystock)
 		mynewlowtest = newLowTest(mystock)
-		#print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest
+		detailTicker()
 
-print "Hitting 52-week high: \n" +  yearhighlist
-print "Hitting 52-week low: \n" + yearlowlist
-print "High Volume alert: \n" + volumealert
+if args.filename:
+	yearHighSummary()
+	yearLowSummary()
+	volumeSummary()
+else:
+	noInputError()
+
