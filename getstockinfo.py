@@ -1,6 +1,7 @@
 from yahoo_finance import Share 
-#from sys import argv
 from argparse import ArgumentParser
+import time
+import datetime
 
 mystock = ""
 yearhighlist = ""
@@ -34,7 +35,7 @@ def getYearHigh(stock):
 def getYearLow(stock):
     return mystock.get_year_low()
 
-def getinput(stock):
+def getinput():
 	return raw_input("Ticker>")
 
 def newHighTest(stock):
@@ -83,10 +84,22 @@ def detailTicker():
 		print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest
 
 def noInputError():
-	print "Nothing specified, plus run -h for help"
+	print "Nothing specified, please run -h for help"
+
+def noAction():
+	print "\n", args.filename + ": " + "Watchlist triggered no alerts today."
+
+def timeStamp():
+	ts = time.time()
+	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+	return st
+
+def startup():
+	print timeStamp()
+	print "Running queries on " + numberOfLines + " symbols..."
 
 parser = ArgumentParser()
-parser.add_argument("-f", "--file", dest="filename", help="file to open", metavar="FILE")
+parser.add_argument("-f", "--file", dest="filename", help="file name of watchlist; expects plain text file with 1 ticker symbol per line, and no empty lines at the end", metavar="FILE")
 parser.add_argument("-v", "--volume", action="store_true", dest="volumeFlag", default=False, help="high volume notification")
 parser.add_argument("-l", "--low", action="store_true", dest="lowVolumeFlag", default=False, help="low volume notification")
 parser.add_argument("-d", "--detail", action="store_true", dest="detail", default=False, help="detailed ticker info")
@@ -96,7 +109,7 @@ if args.filename:
 	watchList = open(args.filename)
 	ticker = watchList.readlines()
 	numberOfLines = str(len(ticker))
-	print "Running queries on " + numberOfLines + " symbols..."
+	startup()
 
 	for ticker in ticker:
 		mystock = getStock(ticker)
@@ -114,9 +127,15 @@ if args.filename:
 		detailTicker()
 
 if args.filename:
-	yearHighSummary()
-	yearLowSummary()
-	volumeSummary()
+	#global yearhighlist
+	if yearhighlist:
+		yearHighSummary()
+	if yearlowlist:
+		yearLowSummary()
+	if volumealert:
+		volumeSummary()
+	#else: #if no yearhigh/low/volume, then print no action
+	#	noAction()
 else:
 	noInputError()
 
