@@ -9,6 +9,7 @@ yearlowlist = ""
 volumealert = ""
 winnerList = ""
 looserList = ""
+tsstart = ""
 
 def getStock(stock):
     return Share(ticker)
@@ -23,7 +24,13 @@ def getAvgDailyVolume(stock):
 	return float(mystock.get_avg_daily_volume())
 
 def getDayChange(stock):
-	return float(mystock.get_change())
+	#Checks to see if the gdc is None (e.g. between ~9am-9:45am Yhaoo Finance returns N/A for change).  If Yahoo-Finance returns N/A (none), then return 0 to prevent error.  Returning 0 causes winLoss() to return invalid data.
+	gdc = mystock.get_change()
+	if gdc is not None:
+		print ticker, gdc
+		return float(mystock.get_change())
+	else:
+		return 0
 
 def getDayHigh(stock):
 	return mystock.get_days_high()
@@ -106,9 +113,19 @@ def noAction():
 	print "\n", args.filename + ": " + "Watchlist triggered no alerts today."
 
 def timeStamp():
-	ts = time.time()
-	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+	global tsstart
+	tsstart = time.time()
+	st = datetime.datetime.fromtimestamp(tsstart).strftime('%Y-%m-%d %H:%M:%S')
 	return st
+
+def timeStop():
+	tsstop = time.time()
+	print tsstart
+	print tsstop
+	st = datetime.datetime.fromtimestamp(tsstop).strftime('%Y-%m-%d %H:%M:%S')
+	#global tsstart
+	#timestop = tsstart - tsstop
+	#print timeStop
 
 def startup():
 	print timeStamp()
@@ -154,8 +171,7 @@ if args.filename:
 		volumeSummary()
 	if args.winnerlooserlist:
 		winLossReport()
-	#else: #if no yearhigh/low/volume, then print no action
-	#	noAction()
+	timeStop()
 else:
 	noInputError()
 
