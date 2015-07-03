@@ -27,7 +27,7 @@ def getDayChange(stock):
 	#Checks to see if the gdc is None (e.g. between ~9am-9:45am Yhaoo Finance returns N/A for change).  If Yahoo-Finance returns N/A (none), then return 0 to prevent error.  Returning 0 causes winLoss() to return invalid data.
 	gdc = mystock.get_change()
 	if gdc is not None:
-		print ticker, gdc
+		#print ticker, gdc
 		return float(mystock.get_change())
 	else:
 		return 0
@@ -47,11 +47,13 @@ def getYearLow(stock):
 def getinput():
 	return raw_input("Ticker>")
 
-def winLossList(stock):
+def winList(stock):
 	if getDayChange(stock) > 0:
 		global winnerList
 		winnerList += ticker
-	else:
+
+def looseList(stock):
+	if getDayChange(stock) <= 0:
 		global looserList
 		looserList += ticker
 
@@ -85,11 +87,13 @@ def newLowTest(stock):
 		newlowpricetest = "no"
 	return newlowpricetest
 
-def winLossReport():
+def winReport():
 	print "\n"
 	print "Winners: \n", winnerList
-	print "Loosers: \n", looserList
 
+def lossReport():
+	print "\n"
+	print "Loosers: \n", looserList
 
 def volumeSummary():
 	if args.volumeFlag:
@@ -120,12 +124,8 @@ def timeStamp():
 
 def timeStop():
 	tsstop = time.time()
-	print tsstart
-	print tsstop
 	st = datetime.datetime.fromtimestamp(tsstop).strftime('%Y-%m-%d %H:%M:%S')
-	#global tsstart
-	#timestop = tsstart - tsstop
-	#print timeStop
+	print st
 
 def startup():
 	print timeStamp()
@@ -136,7 +136,8 @@ parser.add_argument("-f", "--file", dest="filename", help="file name of watchlis
 parser.add_argument("-v", "--volume", action="store_true", dest="volumeFlag", default=False, help="high volume notification")
 parser.add_argument("-l", "--low", action="store_true", dest="lowVolumeFlag", default=False, help="low volume notification")
 parser.add_argument("-d", "--detail", action="store_true", dest="detail", default=False, help="detailed ticker info")
-parser.add_argument("-wl", "--winLoss", action="store_true", dest="winnerlooserlist", default=False, help="outputs today's winners & loosers")
+parser.add_argument("-wl", "--wins", action="store_true", dest="winnerlist", default=False, help="outputs today's winners")
+parser.add_argument("-ll", "--looses", action="store_true", dest="looserlist", default=False, help="outputs today's loosers")
 args = parser.parse_args()
 
 if args.filename:
@@ -158,7 +159,8 @@ if args.filename:
 		mynewhightest = newHighTest(mystock)
 		myvolumehightest = volumeHighTest(mystock)
 		mynewlowtest = newLowTest(mystock)
-		winLossList(mystock)
+		winList(mystock)
+		looseList(mystock)
 		detailTicker()
 
 if args.filename:
@@ -169,9 +171,10 @@ if args.filename:
 		yearLowSummary()
 	if volumealert:
 		volumeSummary()
-	if args.winnerlooserlist:
-		winLossReport()
+	if args.winnerlist:
+		winReport()
+	if args.looserlist:
+		lossReport()
 	timeStop()
 else:
 	noInputError()
-
