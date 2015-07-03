@@ -2,6 +2,7 @@ from yahoo_finance import Share
 from argparse import ArgumentParser
 import time
 import datetime
+import timeit
 
 mystock = ""
 yearhighlist = ""
@@ -9,13 +10,46 @@ yearlowlist = ""
 volumealert = ""
 winnerList = ""
 looserList = ""
-tsstart = ""
+starttime = ""
+sp500index = Share('^GSPC') 
+nasdaqindex = Share('^IXIC')
+sp500Change = ""
+ndqChange = ""
+
+def runtimer_start():
+	global starttime
+	starttime = timeit.default_timer()
+
+def runtimer_stop():
+	stoptime = timeit.default_timer()
+	runtime = stoptime - starttime
+	print "Completed in: %s" % runtime, "seconds"
 
 def getStock(stock):
     return Share(ticker)
 
 def getPrice(stock):
 	return mystock.get_price()
+
+def percentChange(stock):
+	tickerPercentChange = (getDayChange(stock)/getOpen(stock)*100)
+	return tickerPercentChange
+
+def index_price(stock):
+	
+	sp500symbol = "^GSPC"
+	sp500Price = float(sp500index.get_price())
+	sp500Open = float(sp500index.get_open())
+	sp500Change = float(sp500index.get_change())
+	sp500percentChange = ((sp500Change/sp500Open)*100)
+
+	print sp500symbol
+	print sp500Price
+	print sp500Open
+	print sp500percentChange
+
+def getOpen(stock): 
+	return float(mystock.get_open())
 
 def getVolume(stock):
 	return float(mystock.get_volume())
@@ -63,6 +97,7 @@ def newHighTest(stock):
 		newhighpricetest = "yes"
 		global yearhighlist
 		yearhighlist += ticker
+		#print ticker, myprice
 	else:
 		newhighpricetest = "no"
 	return newhighpricetest
@@ -88,27 +123,27 @@ def newLowTest(stock):
 	return newlowpricetest
 
 def winReport():
-	print "\n"
-	print "Winners: \n", winnerList
+	print "\n", "Winners: \n", winnerList
 
 def lossReport():
-	print "\n"
-	print "Loosers: \n", looserList
+	print "\n", "Loosers: \n", looserList
 
 def volumeSummary():
 	if args.volumeFlag:
-		print "High Volume alert: \n" + volumealert
+		print "\n", "High Volume alert: \n" + volumealert
 
 def yearLowSummary():
 	if args.lowVolumeFlag:
 		print "Hitting 52-week low: \n" + yearlowlist
 
 def yearHighSummary():
-	print "Hitting 52-week high: \n" +  yearhighlist
+	print "\n", "Hitting 52-week high: \n" +  yearhighlist
 
 def detailTicker():
+	#debug detail
 	if args.detail:
-		print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest
+		#print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest, myopen, mypercentchange
+		print ticker, myprice, myopen, mydaychange, mypercentchange
 
 def noInputError():
 	print "Nothing specified, please run -h for help"
@@ -117,19 +152,17 @@ def noAction():
 	print "\n", args.filename + ": " + "Watchlist triggered no alerts today."
 
 def timeStamp():
+	print "\n"
 	global tsstart
 	tsstart = time.time()
 	st = datetime.datetime.fromtimestamp(tsstart).strftime('%Y-%m-%d %H:%M:%S')
 	return st
 
-def timeStop():
-	tsstop = time.time()
-	st = datetime.datetime.fromtimestamp(tsstop).strftime('%Y-%m-%d %H:%M:%S')
-	print st
-
 def startup():
 	print timeStamp()
 	print "Running queries on " + numberOfLines + " symbols..."
+
+
  
 parser = ArgumentParser()
 parser.add_argument("-f", "--file", dest="filename", help="file name of watchlist; expects plain text file with 1 ticker symbol per line, and no empty lines at the end", metavar="FILE")
@@ -138,9 +171,12 @@ parser.add_argument("-l", "--low", action="store_true", dest="lowVolumeFlag", de
 parser.add_argument("-d", "--detail", action="store_true", dest="detail", default=False, help="detailed ticker info")
 parser.add_argument("-wl", "--wins", action="store_true", dest="winnerlist", default=False, help="outputs today's winners")
 parser.add_argument("-ll", "--looses", action="store_true", dest="looserlist", default=False, help="outputs today's loosers")
+parser.add_argument("-ip", "--indexprices", action="store_true", dest="indexprices", default=False, help="outputs current index prices")
+
 args = parser.parse_args()
 
 if args.filename:
+	runtimer_start()
 	watchList = open(args.filename)
 	ticker = watchList.readlines()
 	numberOfLines = str(len(ticker))
@@ -149,6 +185,7 @@ if args.filename:
 	for ticker in ticker:
 		mystock = getStock(ticker)
 		myprice = getPrice(mystock)
+		myopen = getOpen(mystock)
 		myvolume = getVolume(mystock)
 		myavgdailyvolume = getAvgDailyVolume(mystock)
 		mydaychange = getDayChange(mystock)
@@ -159,12 +196,15 @@ if args.filename:
 		mynewhightest = newHighTest(mystock)
 		myvolumehightest = volumeHighTest(mystock)
 		mynewlowtest = newLowTest(mystock)
+		mypercentchange = percentChange(mystock)
 		winList(mystock)
 		looseList(mystock)
 		detailTicker()
 
 if args.filename:
 	#global yearhighlist
+	if args.indexprices:
+		index_price('^IXIC')
 	if yearhighlist:
 		yearHighSummary()
 	if yearlowlist:
@@ -175,6 +215,8 @@ if args.filename:
 		winReport()
 	if args.looserlist:
 		lossReport()
-	timeStop()
+	#else: #if no yearhigh/low/volume, then print no action
+	#	noAction()
+	runtimer_stop()
 else:
 	noInputError()
