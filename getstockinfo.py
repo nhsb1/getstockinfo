@@ -4,7 +4,6 @@ import time
 import sys
 import datetime
 import timeit
-import pytz
 
 mystock = ""
 yearhighlist = ""
@@ -28,23 +27,22 @@ def timeStamp():
 	return st
 
 def isMarketOpen():
+#determines how many seconds after midnight now is, and compares it with the seconds after midnight in the blackout period.  Between 9am-9:45am Eastern Yahoo! sends N/A data for some fields, for which I don't have all of the error handling working
 	newnow = datetime.datetime.now()
 	midnight = datetime.datetime.combine(newnow.date(), datetime.time())
 	seconds = (newnow - midnight).seconds
-	startBlackout = 32400
-	endBlackout = 35100
-	print newnow
-	print midnight
-	print seconds
+	#seconds = 33000
+	startBlackout = 32400 #9:00am Eastern is 32,400 seconds after midnight, begin blackout period
+	endBlackout = 35100 #9:34am Eastern is 35,100 seconds after midnight; end blackout period
 	if (seconds >= startBlackout) and (seconds <= endBlackout):
 		return 1
 	else:
 		return 0
+	#sys.exit("that's all folks...")
 
 def marketClosedReport():
-	print "Between 9:00am - 9:45am Eastern Yahoo Finance reports N/A values that are not handled; please re-run outside of blackout hours"
+	print "Between 9:00am - 9:45am Eastern (UTC-0:500) Yahoo Finance reports N/A values that are not handled; please re-run outside of blackout hours"
 
-#function called runtimer_start; takes no arguments and initializes the startimer
 def runtimer_start():
 	global starttime
 	starttime = timeit.default_timer()
@@ -158,11 +156,16 @@ def volumeSummary():
 		print "\n", "High Volume alert: \n" + volumealert
 
 def yearLowSummary():
-	if args.lowVolumeFlag:
+	if args.newlowFlag:
 		print "Hitting 52-week low: \n" + yearlowlist
 
 def yearHighSummary():
-	print "\n", "Hitting 52-week high: \n" +  yearhighlist
+	#global yearhighlist
+	if yearhighlist:
+		print "\n", "Hitting 52-week high: \n" +  yearhighlist
+	else:
+		print "\n", "Hitting 52-week high: \n", "No tickers in watchlist hitting 52-week high \n"
+		 
 
 def detailTicker():
 	#debug detail line item; modify so that -d fits the test case.
@@ -194,7 +197,7 @@ def outperformSP500(self):
 parser = ArgumentParser(description = 'Watchlist Filtering for Yahoo-Finance')
 parser.add_argument("-f", "--file", dest="filename", help="file name of watchlist; expects plain text file with 1 ticker symbol per line, and no empty lines at the end", metavar="FILE")
 parser.add_argument("-v", "--volume", action="store_true", dest="volumeFlag", default=False, help="high volume notification")
-parser.add_argument("-l", "--low", action="store_true", dest="lowVolumeFlag", default=False, help="low volume notification")
+parser.add_argument("-nl", "--low", action="store_true", dest="newlowFlag", default=False, help="new 52-week low notification")
 parser.add_argument("-d", "--detail", action="store_true", dest="detail", default=False, help="detailed ticker info")
 parser.add_argument("-wl", "--wins", action="store_true", dest="winnerlist", default=False, help="outputs today's winners")
 parser.add_argument("-ll", "--losses", action="store_true", dest="looserlist", default=False, help="outputs today's loosers")
@@ -205,7 +208,7 @@ parser.add_argument("-nh", "--newhighs", action="store_true", dest="newhighs", d
 args = parser.parse_args()
 
 mymarketstatus = isMarketOpen()
-#mymarketstatus = 1
+#mymarketstatus = 1 #debugging condition
 
 if mymarketstatus < 1:
 	if args.filename:
@@ -239,14 +242,9 @@ if mymarketstatus < 1:
 			detailTicker()
 			if args.outperformance:
 				outperformSP500(mystock)
-else:
-	marketClosedReport()
-
-if mymarketstatus < 1:
 	if args.filename:
 		if args.newhighs:
-			if yearhighlist:
-				yearHighSummary()
+			yearHighSummary()
 		if yearlowlist:
 			yearLowSummary()
 		if volumealert:
