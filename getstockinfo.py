@@ -174,7 +174,8 @@ def detailTicker():
 	if args.detail:
 		#print ticker, myprice, myvolume, myavgdailyvolume, mydaychange, mydayhigh, mydaylow, myyearhigh, myyearlow, mynewhightest, myvolumehightest, mynewlowtest, myopen, mypercentchange
 		tickerPrint = ticker.strip('\n')
-		print tickerPrint, myprice, str(round(mypercentchange, 2))+'%'
+		print ticker, myprice, mydayhigh, myyearhigh, mydaylow, myyearlow
+		#print tickerPrint, myprice, str(round(mypercentchange, 2))+'%'
 
 def noAction():
 	print "\n", args.filename + ": " + "Watchlist triggered no alerts today."
