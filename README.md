@@ -1,5 +1,7 @@
 # getstockinfo 
 =====================================================
+![screenshot1](https://cloud.githubusercontent.com/assets/12847315/10928331/722101be-8275-11e5-943d-83bd0010835a.jpg)
+
 When supplying a list of tickersymbols (e.g. watchlist.txt), getstockinfo will filter the output based on the command line arguments specified.  
 
 File/watchlist: '-f watchlist.txt', using a watchlist text file, which contains one valid Yahoo Finance ticker symbol per line, getstockinfo will loop though each ticker and capture relevent information, and output a report based on the command line arguments specified.  See the sample watchlist.txt file provided for sample data.
@@ -35,5 +37,3 @@ See Also
 --------
 
 For more information: https://pypi.python.org/pypi/getstockinfo
-
-![screenshot1](https://cloud.githubusercontent.com/assets/12847315/10928331/722101be-8275-11e5-943d-83bd0010835a.jpg)
