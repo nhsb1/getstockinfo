@@ -35,3 +35,5 @@ See Also
 --------
 
 For more information: https://pypi.python.org/pypi/getstockinfo
+
+![screenshot1](https://cloud.githubusercontent.com/assets/12847315/10928331/722101be-8275-11e5-943d-83bd0010835a.jpg)
