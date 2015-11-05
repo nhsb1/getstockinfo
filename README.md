@@ -31,7 +31,7 @@ Install
 Usage
 -----
 
-    getstockinfo -v -nl -wl -ll -ip -op -nh -f watchlist.txt
+    getstockinfo-release -v -nl -wl -ll -ip -op -nh -f watchlist.txt
 
 See Also
 --------
