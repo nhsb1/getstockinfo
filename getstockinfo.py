@@ -17,6 +17,7 @@ sp500Price = ""
 sp500Change = ""
 sp500percentChange = ""
 ndqChange = ""
+globalTrip = 0
 
 ###VolumeHighTest - return the volumealert as a list instead of a string, so that it can be referenced easier elsewhere in the future
 
@@ -187,7 +188,7 @@ def outperformSP500(self):
 	#tickerPrint = ticker.strip('\n')
 	global sp500percentChange
 	if mypercentchange > sp500percentChange:
-		print ticker.strip('\n') + ", " + str(round(mypercentchange, 2))+'%' + ", " + str(round(myofAverageVolume, 2))+'%'
+		print ticker.strip('\n') + ", " + str(round(mypercentchange, 2))+'%' + ", " + str(round(myofAverageVolume, 2))+'%' + ", " + myprice
  
 parser = ArgumentParser(description = 'Watchlist Filtering for Yahoo-Finance')
 parser.add_argument("-f", "--file", required=True, dest="filename", help="file name of watchlist; expects plain text file with 1 ticker symbol per line, and no empty lines at the end", metavar="FILE")
@@ -238,6 +239,9 @@ for ticker in ticker:
 	myofAverageVolume = ofAverageVolume(mystock)
 	detailTicker()
 	if args.outperformance:
+		if globalTrip is 0: 
+			print "Ticker, Percent Change, Percent of Average Volume, Price"
+			globalTrip = 1
 		outperformSP500(mystock)
 if args.filename:
 	if args.newhighs:
